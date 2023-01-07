@@ -20,6 +20,15 @@ def calculate_distanes(p1, p2):
 def calculate_angle(p1, p2):  # calculate  like p2 is (0, 0)
     return math.atan2((p2[1] - p1[1]), (p2[0] - p1[0]))
 
+def create_column(space, pos):
+    body = pymunk.Body(body_type=pymunk.Body.DYNAMIC)
+    body.position = pos
+    shape = pymunk.Poly.create_box(body, (20, 100), radius=1)
+    shape.elasticity = 0.4
+    shape.friction = 0.5
+    shape.mass = 20
+    space.add(body, shape)
+    return shape
 
 def create_ground(space):
     body = pymunk.Body(body_type=pymunk.Body.STATIC)
@@ -69,6 +78,10 @@ def main(screen, WIDTH, HEIGHT):
     shooted = False
     stretched = False
 
+    column = create_column(space, (400, 150))
+    # column_rect = pygame.Rect(0, 0, 100, 20)
+    # column_rect.center = convert_coords((400, 150))
+
     while run:
         mouse_pos = pygame.mouse.get_pos()
 
@@ -95,6 +108,7 @@ def main(screen, WIDTH, HEIGHT):
                     fy = math.sin(angle) * force
                     bird.body.apply_impulse_at_local_point((-fx, fy), (0, 0))
 
+
         screen.fill('lightblue')
 
         # drawing a bird
@@ -107,6 +121,15 @@ def main(screen, WIDTH, HEIGHT):
         #drawing a line between a bird and mouse
         if line:
             pygame.draw.line(screen, 'red', line[0], line[1], 3)
+
+        #drawing a column
+        points = []
+        for vector in column.get_vertices():
+            x, y = vector.rotated(column.body.angle) + column.body.position
+            points.append(convert_coords((int(x), int(y))))
+
+        pygame.draw.lines(screen, 'black', True, points)
+
 
         pygame.display.update()
 
