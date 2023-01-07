@@ -1,6 +1,7 @@
 import pygame
 import pymunk
 import math
+from classes import Obstacle
 
 pygame.init()
 
@@ -20,15 +21,6 @@ def calculate_distanes(p1, p2):
 def calculate_angle(p1, p2):  # calculate  like p2 is (0, 0)
     return math.atan2((p2[1] - p1[1]), (p2[0] - p1[0]))
 
-def create_column(space, pos):
-    body = pymunk.Body(body_type=pymunk.Body.DYNAMIC)
-    body.position = pos
-    shape = pymunk.Poly.create_box(body, (20, 100), radius=1)
-    shape.elasticity = 0.4
-    shape.friction = 0.5
-    shape.mass = 20
-    space.add(body, shape)
-    return shape
 
 def create_ground(space):
     body = pymunk.Body(body_type=pymunk.Body.STATIC)
@@ -78,9 +70,11 @@ def main(screen, WIDTH, HEIGHT):
     shooted = False
     stretched = False
 
-    column = create_column(space, (400, 150))
-    # column_rect = pygame.Rect(0, 0, 100, 20)
-    # column_rect.center = convert_coords((400, 150))
+
+    obstacles = [
+        Obstacle(space, (400, 150), 'column'),
+        Obstacle(space, (400, 210), 'beam')
+    ]
 
     while run:
         mouse_pos = pygame.mouse.get_pos()
@@ -122,13 +116,9 @@ def main(screen, WIDTH, HEIGHT):
         if line:
             pygame.draw.line(screen, 'red', line[0], line[1], 3)
 
-        #drawing a column
-        points = []
-        for vector in column.get_vertices():
-            x, y = vector.rotated(column.body.angle) + column.body.position
-            points.append(convert_coords((int(x), int(y))))
-
-        pygame.draw.lines(screen, 'black', True, points)
+        # drawing obstacles
+        for obstacle in obstacles:
+            obstacle.draw_obstacle(screen)
 
 
         pygame.display.update()
