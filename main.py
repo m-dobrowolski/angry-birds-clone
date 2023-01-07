@@ -1,7 +1,7 @@
 import pygame
 import pymunk
 import math
-from classes import Obstacle
+from classes import Obstacle, Bird
 
 pygame.init()
 
@@ -32,18 +32,18 @@ def create_ground(space):
     return shape
 
 
-def create_brid(space, pos):
-    radius = 20
+# def create_brid(space, pos):
+#     radius = 20
 
-    body = pymunk.Body(body_type=pymunk.Body.STATIC)
-    body.position = pos
-    shape = pymunk.Circle(body, radius)
-    shape.mass = 10
-    shape.elasticity = 0.9
-    shape.friction = 0.4
-    space.add(body, shape)
+#     body = pymunk.Body(body_type=pymunk.Body.STATIC)
+#     body.position = pos
+#     shape = pymunk.Circle(body, radius)
+#     shape.mass = 10
+#     shape.elasticity = 0.9
+#     shape.friction = 0.4
+#     space.add(body, shape)
 
-    return shape
+#     return shape
 
 
 def main(screen, WIDTH, HEIGHT):
@@ -56,13 +56,13 @@ def main(screen, WIDTH, HEIGHT):
     space = pymunk.Space()
     space.gravity = (0, -1000)
 
-    bird_start_pos_pm = (150, 200)
-    bird_start_pos_pg = convert_coords(bird_start_pos_pm)
-    bird = create_brid(space, bird_start_pos_pm)
-    bird_rect = pygame.Rect(
-        bird_start_pos_pg[0] - 20, bird_start_pos_pg[1] - 20,
-        40, 40
-    )
+    # bird_start_pos_pm = (150, 200)
+    # bird_start_pos_pg = convert_coords(bird_start_pos_pm)
+    # bird = create_brid(space, bird_start_pos_pm)
+    # bird_rect = pygame.Rect(
+    #     bird_start_pos_pg[0] - 20, bird_start_pos_pg[1] - 20,
+    #     40, 40
+    # )
 
     ground = create_ground(space)
     ground_rect = pygame.Rect(0, HEIGHT - 100, WIDTH, 100)
@@ -70,10 +70,11 @@ def main(screen, WIDTH, HEIGHT):
     shooted = False
     stretched = False
 
+    bird = Bird(space)
 
     obstacles = [
-        Obstacle(space, (400, 150), 'column'),
-        Obstacle(space, (400, 210), 'beam')
+        Obstacle(space, (600, 150), 'column'),
+        Obstacle(space, (600, 210), 'beam')
     ]
 
     while run:
@@ -81,33 +82,34 @@ def main(screen, WIDTH, HEIGHT):
 
         line = None
         if stretched is True:
-            line = (bird_rect.center, mouse_pos)
+            line = (bird.bird_rect.center, mouse_pos)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
                 break
             if (not shooted and not stretched and
-                    bird_rect.collidepoint(mouse_pos)):
+                    bird.bird_rect.collidepoint(mouse_pos)):
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     stretched = True
             if (not shooted and stretched):
                 if event.type == pygame.MOUSEBUTTONUP:
                     stretched = False
                     shooted = True
-                    bird.body.body_type = pymunk.Body.DYNAMIC
+                    bird.shape.body.body_type = pymunk.Body.DYNAMIC
                     angle = calculate_angle(*line)
                     force = calculate_distanes(*line) * 50
                     fx = math.cos(angle) * force
                     fy = math.sin(angle) * force
-                    bird.body.apply_impulse_at_local_point((-fx, fy), (0, 0))
+                    bird.shape.body.apply_impulse_at_local_point((-fx, fy), (0, 0))
 
 
         screen.fill('lightblue')
 
         # drawing a bird
-        bird_rect.center = convert_coords(bird.body.position)
-        pygame.draw.circle(screen, 'black', bird_rect.center, 20)
+        # bird_rect.center = convert_coords(bird.body.position)
+        # pygame.draw.circle(screen, 'black', bird_rect.center, 20)
+        bird.draw(screen)
 
         #drawing the ground
         pygame.draw.rect(screen, 'green', ground_rect)
