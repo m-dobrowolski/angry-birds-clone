@@ -12,13 +12,6 @@ def convert_coords(coords):
     return int(coords[0]), int(HEIGHT - coords[1])
 
 
-# def draw(screen, bird):
-#     screen.fill('lightblue')
-
-#     pygame.draw.circle(screen, 'black', bird.body.position, 20)
-
-#     pygame.display.update()
-
 def create_ground(space):
     body = pymunk.Body(body_type=pymunk.Body.STATIC)
     body.position = (WIDTH/2, 50)
@@ -56,6 +49,10 @@ def main(screen, WIDTH, HEIGHT):
     bird_start_pos_pm = (150, 200)
     bird_start_pos_pg = convert_coords(bird_start_pos_pm)
     bird = create_brid(space, bird_start_pos_pm)
+    bird_rect = pygame.Rect(
+        bird_start_pos_pg[0] - 20, bird_start_pos_pg[1] - 20,
+        40, 40
+    )
 
     ground = create_ground(space)
     ground_rect = pygame.Rect(0, HEIGHT - 100, WIDTH, 100)
@@ -64,23 +61,30 @@ def main(screen, WIDTH, HEIGHT):
     stretched = False
 
     while run:
+        mouse_pos = pygame.mouse.get_pos()
+
         line = None
-        if shooted is False:
-            line = (bird_start_pos_pg, pygame.mouse.get_pos())
+        if stretched is True:
+            line = (bird_start_pos_pg, mouse_pos)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
                 break
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                bird.body.body_type = pymunk.Body.DYNAMIC
-                shooted = True
+            if (not shooted and not stretched and
+                    bird_rect.collidepoint(mouse_pos)):
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    stretched = True
+            if (not shooted and stretched):
+                if event.type == pygame.MOUSEBUTTONUP:
+                    stretched = False
+                    shooted = True
 
         screen.fill('lightblue')
 
         # drawing a bird
         bird_pos = convert_coords(bird.body.position)
-        pygame.draw.circle(screen, 'black', bird_pos, 20)
+        pygame.draw.circle(screen, 'black', bird_rect.center, 20)
 
         #drawing the ground
         pygame.draw.rect(screen, 'green', ground_rect)
