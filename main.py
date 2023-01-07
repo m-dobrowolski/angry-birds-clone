@@ -1,5 +1,6 @@
 import pygame
 import pymunk
+import math
 
 pygame.init()
 
@@ -10,6 +11,14 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 def convert_coords(coords):
     '''converts coordinates from pymunk to pygame'''
     return int(coords[0]), int(HEIGHT - coords[1])
+
+
+def calculate_distanes(p1, p2):
+    return math.sqrt((p2[1] - p1[1])**2 + (p2[0] - p1[0])**2)
+
+
+def calculate_angle(p1, p2):  # calculate  like p2 is (0, 0)
+    return math.atan2((p2[1] - p1[1]), (p2[0] - p1[0]))
 
 
 def create_ground(space):
@@ -65,7 +74,7 @@ def main(screen, WIDTH, HEIGHT):
 
         line = None
         if stretched is True:
-            line = (bird_start_pos_pg, mouse_pos)
+            line = (bird_rect.center, mouse_pos)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -79,11 +88,17 @@ def main(screen, WIDTH, HEIGHT):
                 if event.type == pygame.MOUSEBUTTONUP:
                     stretched = False
                     shooted = True
+                    bird.body.body_type = pymunk.Body.DYNAMIC
+                    angle = calculate_angle(*line)
+                    force = calculate_distanes(*line) * 50
+                    fx = math.cos(angle) * force
+                    fy = math.sin(angle) * force
+                    bird.body.apply_impulse_at_local_point((-fx, fy), (0, 0))
 
         screen.fill('lightblue')
 
         # drawing a bird
-        bird_pos = convert_coords(bird.body.position)
+        bird_rect.center = convert_coords(bird.body.position)
         pygame.draw.circle(screen, 'black', bird_rect.center, 20)
 
         #drawing the ground
