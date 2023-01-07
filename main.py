@@ -71,6 +71,8 @@ def main(screen, WIDTH, HEIGHT):
     stretched = False
 
     bird = Bird(space)
+    birds = [bird]
+    lifes = 3  # 3 birds to shoot
 
     obstacles = [
         Obstacle(space, (600, 150), 'column'),
@@ -80,6 +82,11 @@ def main(screen, WIDTH, HEIGHT):
     while run:
         mouse_pos = pygame.mouse.get_pos()
 
+        if lifes and shooted:
+            shooted = False
+            bird = Bird(space)
+            birds.append(bird)
+
         line = None
         if stretched is True:
             line = (bird.bird_rect.center, mouse_pos)
@@ -88,11 +95,12 @@ def main(screen, WIDTH, HEIGHT):
             if event.type == pygame.QUIT:
                 run = False
                 break
-            if (not shooted and not stretched and
-                    bird.bird_rect.collidepoint(mouse_pos)):
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    stretched = True
-            if (not shooted and stretched):
+            if lifes:
+                if not stretched and bird.bird_rect.collidepoint(mouse_pos):
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        stretched = True
+                        lifes -= 1
+            if stretched:
                 if event.type == pygame.MOUSEBUTTONUP:
                     stretched = False
                     shooted = True
@@ -104,12 +112,14 @@ def main(screen, WIDTH, HEIGHT):
                     bird.shape.body.apply_impulse_at_local_point((-fx, fy), (0, 0))
 
 
+
         screen.fill('lightblue')
 
         # drawing a bird
         # bird_rect.center = convert_coords(bird.body.position)
         # pygame.draw.circle(screen, 'black', bird_rect.center, 20)
-        bird.draw(screen)
+        for bird in birds:
+            bird.draw(screen)
 
         #drawing the ground
         pygame.draw.rect(screen, 'green', ground_rect)
