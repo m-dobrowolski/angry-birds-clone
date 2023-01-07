@@ -8,6 +8,7 @@ pygame.init()
 WIDTH = 1000
 HEIGHT = 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
+font = pygame.font.Font(None, 50)
 
 def convert_coords(coords):
     '''converts coordinates from pymunk to pygame'''
@@ -20,6 +21,13 @@ def calculate_distanes(p1, p2):
 
 def calculate_angle(p1, p2):  # calculate  like p2 is (0, 0)
     return math.atan2((p2[1] - p1[1]), (p2[0] - p1[0]))
+
+
+def display_lifes(screen, lifes):
+    message = f'Birds left: {lifes}'
+    lifes_surface = font.render(message, True, (64, 64, 64))
+    lifes_rect = lifes_surface.get_rect(bottomleft=(20, HEIGHT - 20))
+    screen.blit(lifes_surface, lifes_rect)
 
 
 def create_ground(space):
@@ -123,6 +131,9 @@ def main(screen, WIDTH, HEIGHT):
 
         #drawing the ground
         pygame.draw.rect(screen, 'green', ground_rect)
+
+        #displaying birds left to shoot
+        display_lifes(screen, lifes)
 
         #drawing a line between a bird and mouse
         if line:
