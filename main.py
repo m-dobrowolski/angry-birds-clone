@@ -10,6 +10,8 @@ HEIGHT = 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 font = pygame.font.Font(None, 50)
 
+enemies = []
+
 def convert_coords(coords):
     '''converts coordinates from pymunk to pygame'''
     return int(coords[0]), int(HEIGHT - coords[1])
@@ -39,20 +41,12 @@ def create_ground(space):
     space.add(body, shape)
     return shape
 
-
-# def create_brid(space, pos):
-#     radius = 20
-
-#     body = pymunk.Body(body_type=pymunk.Body.STATIC)
-#     body.position = pos
-#     shape = pymunk.Circle(body, radius)
-#     shape.mass = 10
-#     shape.elasticity = 0.9
-#     shape.friction = 0.4
-#     space.add(body, shape)
-
-#     return shape
-
+def collision_bird_enemy(arbiter, space, data):
+    bird_shape, enemy_shape = arbiter.shapes
+    for enemy in enemies:
+        if enemy_shape.body == enemy.body:
+            space.remove(enemy.shape, enemy.shape.body)
+            enemies.remove(enemy)
 
 def main(screen, WIDTH, HEIGHT):
     run = True
@@ -63,14 +57,6 @@ def main(screen, WIDTH, HEIGHT):
 
     space = pymunk.Space()
     space.gravity = (0, -1000)
-
-    # bird_start_pos_pm = (150, 200)
-    # bird_start_pos_pg = convert_coords(bird_start_pos_pm)
-    # bird = create_brid(space, bird_start_pos_pm)
-    # bird_rect = pygame.Rect(
-    #     bird_start_pos_pg[0] - 20, bird_start_pos_pg[1] - 20,
-    #     40, 40
-    # )
 
     ground = create_ground(space)
     ground_rect = pygame.Rect(0, HEIGHT - 100, WIDTH, 100)
@@ -83,11 +69,14 @@ def main(screen, WIDTH, HEIGHT):
     lifes = 3  # 3 birds to shoot
 
     enemy = Enemy((600, 240), space)
+    enemies.append(enemy)
 
     obstacles = [
         Obstacle(space, (600, 150), 'column'),
         Obstacle(space, (600, 210), 'beam')
     ]
+
+    space.add_collision_handler(1, 2).post_solve=collision_bird_enemy
 
     while run:
         mouse_pos = pygame.mouse.get_pos()
@@ -126,12 +115,12 @@ def main(screen, WIDTH, HEIGHT):
         screen.fill('lightblue')
 
         # drawing a bird
-        # bird_rect.center = convert_coords(bird.body.position)
-        # pygame.draw.circle(screen, 'black', bird_rect.center, 20)
         for bird in birds:
             bird.draw(screen)
 
-        enemy.draw_enemy(screen)
+        # drawing an enemy
+        for enemy in enemies:
+            enemy.draw_enemy(screen)
 
         #drawing the ground
         pygame.draw.rect(screen, 'green', ground_rect)

@@ -49,6 +49,7 @@ class Bird:
         shape.mass = 10
         shape.elasticity = 0.9
         shape.friction = 0.4
+        shape.collision_type = 1
         self.shape = shape
         space.add(body, shape)
 
@@ -64,10 +65,12 @@ class Enemy:
 
         body = pymunk.Body(body_type=pymunk.Body.DYNAMIC)
         body.position = pos
+        self.body = body
         shape = pymunk.Circle(body, radius)
         shape.mass = mass
         shape.elasticity = 0.7
         shape.friction = 1
+        shape.collision_type = 2
         self.shape = shape
         space.add(body, shape)
 
