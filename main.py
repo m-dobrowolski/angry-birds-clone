@@ -1,7 +1,7 @@
 import pygame
 import pymunk
 import math
-from classes import Obstacle, Bird
+from classes import Obstacle, Bird, Enemy
 
 pygame.init()
 
@@ -82,6 +82,8 @@ def main(screen, WIDTH, HEIGHT):
     birds = [bird]
     lifes = 3  # 3 birds to shoot
 
+    enemy = Enemy((600, 240), space)
+
     obstacles = [
         Obstacle(space, (600, 150), 'column'),
         Obstacle(space, (600, 210), 'beam')
@@ -107,9 +109,9 @@ def main(screen, WIDTH, HEIGHT):
                 if not stretched and bird.bird_rect.collidepoint(mouse_pos):
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         stretched = True
-                        lifes -= 1
             if stretched:
                 if event.type == pygame.MOUSEBUTTONUP:
+                    lifes -= 1
                     stretched = False
                     shooted = True
                     bird.shape.body.body_type = pymunk.Body.DYNAMIC
@@ -128,6 +130,8 @@ def main(screen, WIDTH, HEIGHT):
         # pygame.draw.circle(screen, 'black', bird_rect.center, 20)
         for bird in birds:
             bird.draw(screen)
+
+        enemy.draw_enemy(screen)
 
         #drawing the ground
         pygame.draw.rect(screen, 'green', ground_rect)
