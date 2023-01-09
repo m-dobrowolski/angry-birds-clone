@@ -2,6 +2,7 @@ import pygame
 import pymunk
 import math
 from classes import Obstacle, Bird, Enemy
+from levels import Level
 
 pygame.init()
 
@@ -52,10 +53,10 @@ def collision_bird_enemy(arbiter, space, data):
 
 def collision_bird_obstacle(arbiter, space, data):
     bird_shape, obstacle_shape = arbiter.shapes
-    if arbiter.total_impulse.length > 2500:
+    if arbiter.total_impulse.length > 2500:  # popraw wartości
         for obstacle in obstacles:
-            if obstacle_shape.body == obstacle.shape.body:
-                space.remove(obstacle.shape, obstacle.shape.body)
+            if obstacle_shape.body == obstacle.body:
+                space.remove(obstacle.shape, obstacle.body)
                 obstacles.remove(obstacle)
 
 def collision_enemy_obstacle(arbiter, space, data):
@@ -86,11 +87,15 @@ def main(screen, WIDTH, HEIGHT):
     birds = [bird]
     lifes = 3  # 3 birds to shoot
 
-    enemy = Enemy((600, 240), space)
-    enemies.append(enemy)
+    # enemy = Enemy((600, 240), space)
+    # enemies.append(enemy)
 
-    obstacles.append(Obstacle(space, (600, 150), 'column'),)
-    obstacles.append(Obstacle(space, (600, 210), 'beam'))
+    # obstacles.append(Obstacle(space, (600, 150), 'column'),)
+    # obstacles.append(Obstacle(space, (600, 210), 'beam'))
+
+    level = Level(space, enemies, obstacles)
+    level_number = 1
+    level.load_level(level_number)
 
     space.add_collision_handler(1, 2).post_solve = collision_bird_enemy
     space.add_collision_handler(1, 3).post_solve = collision_bird_obstacle
@@ -121,14 +126,31 @@ def main(screen, WIDTH, HEIGHT):
                     lifes -= 1
                     stretched = False
                     shooted = True
-                    bird.shape.body.body_type = pymunk.Body.DYNAMIC
+                    bird.body.body_type = pymunk.Body.DYNAMIC
                     angle = calculate_angle(*line)
                     force = calculate_distanes(*line) * 50
                     fx = math.cos(angle) * force
                     fy = math.sin(angle) * force
-                    bird.shape.body.apply_impulse_at_local_point((-fx, fy), (0, 0))
+                    bird.body.apply_impulse_at_local_point((-fx, fy), (0, 0))
 
+        if len(enemies) == 0 and level != 0:
+            print('level cleared')
+            for obstacle in obstacles:
+                space.remove(obstacle.shape, obstacle.body)
+            obstacles.clear()
+            for bird in birds:
+                space.remove(bird.shape, bird.body)
+            birds.clear()
+            lifes = 3
 
+            level_number += 1
+            try:
+                level.load_level(level_number)
+                bird = Bird(space)
+                birds.append(bird)
+            except:
+                print('you\'ve won')
+                level = 0
 
         screen.fill('lightblue')
 

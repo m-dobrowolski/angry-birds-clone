@@ -24,6 +24,7 @@ class Obstacle:
         shape.friction = 0.4
         shape.collision_type = 3
         self.shape = shape
+        self.body = body
         space.add(body, shape)
 
     def draw_obstacle(self, screen):
@@ -53,6 +54,7 @@ class Bird:
         shape.friction = 0.4
         shape.collision_type = 1
         self.shape = shape
+        self.body = body
         space.add(body, shape)
 
     def draw(self, screen):
