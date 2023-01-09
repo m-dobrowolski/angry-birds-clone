@@ -11,6 +11,8 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 font = pygame.font.Font(None, 50)
 
 enemies = []
+obstacles = []
+birds = []
 
 def convert_coords(coords):
     '''converts coordinates from pymunk to pygame'''
@@ -48,6 +50,22 @@ def collision_bird_enemy(arbiter, space, data):
             space.remove(enemy.shape, enemy.shape.body)
             enemies.remove(enemy)
 
+def collision_bird_obstacle(arbiter, space, data):
+    bird_shape, obstacle_shape = arbiter.shapes
+    if arbiter.total_impulse.length > 2500:
+        for obstacle in obstacles:
+            if obstacle_shape.body == obstacle.shape.body:
+                space.remove(obstacle.shape, obstacle.shape.body)
+                obstacles.remove(obstacle)
+
+def collision_enemy_obstacle(arbiter, space, data):
+    enemy_shape, obstacle_shape = arbiter.shapes
+    if arbiter.total_impulse.length > 5000:
+        for enemy in enemies:
+            if enemy_shape.body == enemy.body:
+                space.remove(enemy.shape, enemy.shape.body)
+                enemies.remove(enemy)
+
 def main(screen, WIDTH, HEIGHT):
     run = True
 
@@ -71,12 +89,12 @@ def main(screen, WIDTH, HEIGHT):
     enemy = Enemy((600, 240), space)
     enemies.append(enemy)
 
-    obstacles = [
-        Obstacle(space, (600, 150), 'column'),
-        Obstacle(space, (600, 210), 'beam')
-    ]
+    obstacles.append(Obstacle(space, (600, 150), 'column'),)
+    obstacles.append(Obstacle(space, (600, 210), 'beam'))
 
-    space.add_collision_handler(1, 2).post_solve=collision_bird_enemy
+    space.add_collision_handler(1, 2).post_solve = collision_bird_enemy
+    space.add_collision_handler(1, 3).post_solve = collision_bird_obstacle
+    space.add_collision_handler(2, 3).post_solve = collision_enemy_obstacle
 
     while run:
         mouse_pos = pygame.mouse.get_pos()

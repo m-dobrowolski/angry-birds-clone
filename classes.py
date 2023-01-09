@@ -19,9 +19,10 @@ class Obstacle:
             shape = pymunk.Poly.create_box(body, (20, 100), radius=1)
         elif type == 'beam':
             shape = pymunk.Poly.create_box(body, (100, 20), radius=1)
-        shape.mass = 50
-        shape.elasticity = 0.6
+        shape.mass = 10
+        shape.elasticity = 0.3
         shape.friction = 0.4
+        shape.collision_type = 3
         self.shape = shape
         space.add(body, shape)
 
@@ -32,6 +33,7 @@ class Obstacle:
             x, y = vector.rotated(self.shape.body.angle) + self.shape.body.position
             points.append(convert_coords((int(x), int(y))))
         pygame.draw.lines(screen, 'black', True, points)
+
 
 class Bird:
     def __init__(self, space):
