@@ -67,6 +67,9 @@ def collision_enemy_obstacle(arbiter, space, data):
                 space.remove(enemy.shape, enemy.shape.body)
                 enemies.remove(enemy)
 
+def clear_space():
+
+
 def main(screen, WIDTH, HEIGHT):
     run = True
 
@@ -101,6 +104,13 @@ def main(screen, WIDTH, HEIGHT):
     space.add_collision_handler(1, 3).post_solve = collision_bird_obstacle
     space.add_collision_handler(2, 3).post_solve = collision_enemy_obstacle
 
+    message = 'Restart level'
+    reset_surface = font.render(message, True, (64, 64, 64))
+    reset_rect = reset_surface.get_rect(bottomright=(WIDTH - 10, HEIGHT - 10))
+    reset_rect_background = reset_rect.move(-5, -5)
+    reset_rect_background.height += 10
+    reset_rect_background.width += 10
+
     while run:
         mouse_pos = pygame.mouse.get_pos()
 
@@ -132,17 +142,48 @@ def main(screen, WIDTH, HEIGHT):
                     fx = math.cos(angle) * force
                     fy = math.sin(angle) * force
                     bird.body.apply_impulse_at_local_point((-fx, fy), (0, 0))
+            if event.type == pygame.MOUSEBUTTONDOWN and reset_rect_background.collidepoint(mouse_pos):
 
+                #clearing space
+                for enemy in enemies:
+                    space.remove(enemy.shape, enemy.body)
+                enemies.clear()
+                for obstacle in obstacles:
+                    space.remove(obstacle.shape, obstacle.body)
+                obstacles.clear()
+                for bird in birds:
+                    space.remove(bird.shape, bird.body)
+                birds.clear()
+
+                #reseting lifes
+                lifes = 3
+
+                #trying to load level
+                try:
+                    level.load_level(level_number)
+                    bird = Bird(space)
+                    birds.append(bird)
+                except:
+                    print('you\'ve won')
+                    level = 0
+
+
+        # level loading
         if len(enemies) == 0 and level != 0:
             print('level cleared')
+
+            #clearing space
             for obstacle in obstacles:
                 space.remove(obstacle.shape, obstacle.body)
             obstacles.clear()
             for bird in birds:
                 space.remove(bird.shape, bird.body)
             birds.clear()
+
+            #reseting lifes
             lifes = 3
 
+            #trying to load level
             level_number += 1
             try:
                 level.load_level(level_number)
@@ -176,6 +217,9 @@ def main(screen, WIDTH, HEIGHT):
         for obstacle in obstacles:
             obstacle.draw_obstacle(screen)
 
+        pygame.draw.rect(screen, 'red', reset_rect_background)
+        pygame.draw.rect(screen, 'white', reset_rect)
+        screen.blit(reset_surface, reset_rect)
 
         pygame.display.update()
 
