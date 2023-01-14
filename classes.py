@@ -38,6 +38,7 @@ class Obstacle:
 
 class Bird:
     def __init__(self, space):
+        '''class represents a bird'''
         radius = 15
 
         bird_start_pos_pm = (150, 200)
@@ -58,12 +59,14 @@ class Bird:
         space.add(body, shape)
 
     def draw(self, screen):
+        '''draws enemy on the screen'''
         self.bird_rect.center = convert_coords(self.shape.body.position)
         pygame.draw.circle(screen, 'black', self.bird_rect.center, 15)
 
 
 class Enemy:
     def __init__(self, pos, space):
+        '''class represents an enemy'''
         radius = 15
         mass = 10
 
@@ -79,5 +82,6 @@ class Enemy:
         space.add(body, shape)
 
     def draw_enemy(self, screen):
+        '''draws an enemy on the screen'''
         pos = convert_coords(self.shape.body.position)
         pygame.draw.circle(screen, 'green', pos, 15)

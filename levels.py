@@ -1,12 +1,15 @@
 from classes import Obstacle, Enemy
 
+
 class Level:
     def __init__(self, space, enemies, obstacles):
+        '''class representing levels of a game'''
         self.space = space
         self.enemies = enemies
         self.obstacles = obstacles
 
     def load_level(self, level):
+        '''loads level'''
         level_name = f'level{level}'
         load_level = getattr(self, level_name)
         load_level()
