@@ -67,7 +67,17 @@ def collision_enemy_obstacle(arbiter, space, data):
                 space.remove(enemy.shape, enemy.shape.body)
                 enemies.remove(enemy)
 
-def clear_space():
+def clear_space(space):
+    #clearing space
+    for enemy in enemies:
+        space.remove(enemy.shape, enemy.body)
+    enemies.clear()
+    for obstacle in obstacles:
+        space.remove(obstacle.shape, obstacle.body)
+    obstacles.clear()
+    for bird in birds:
+        space.remove(bird.shape, bird.body)
+    birds.clear()
 
 
 def main(screen, WIDTH, HEIGHT):
@@ -78,7 +88,7 @@ def main(screen, WIDTH, HEIGHT):
     clock = pygame.time.Clock()
 
     space = pymunk.Space()
-    space.gravity = (0, -1000)
+    space.gravity = (0, -600)
 
     ground = create_ground(space)
     ground_rect = pygame.Rect(0, HEIGHT - 100, WIDTH, 100)
@@ -87,7 +97,7 @@ def main(screen, WIDTH, HEIGHT):
     stretched = False
 
     bird = Bird(space)
-    birds = [bird]
+    birds.append(bird)
     lifes = 3  # 3 birds to shoot
 
     # enemy = Enemy((600, 240), space)
@@ -104,12 +114,22 @@ def main(screen, WIDTH, HEIGHT):
     space.add_collision_handler(1, 3).post_solve = collision_bird_obstacle
     space.add_collision_handler(2, 3).post_solve = collision_enemy_obstacle
 
+
+    #restart level button
     message = 'Restart level'
     reset_surface = font.render(message, True, (64, 64, 64))
     reset_rect = reset_surface.get_rect(bottomright=(WIDTH - 10, HEIGHT - 10))
     reset_rect_background = reset_rect.move(-5, -5)
     reset_rect_background.height += 10
     reset_rect_background.width += 10
+
+    #restart game button
+    message = 'Restart game'
+    reset_game_surface = font.render(message, True, (64, 64, 64))
+    reset_game_rect = reset_game_surface.get_rect(bottomright=(WIDTH - 15 - reset_rect_background.width, HEIGHT - 10))
+    reset_game_rect_background = reset_game_rect.move(-5, -5)
+    reset_game_rect_background.height += 10
+    reset_game_rect_background.width += 10
 
     while run:
         mouse_pos = pygame.mouse.get_pos()
@@ -142,43 +162,39 @@ def main(screen, WIDTH, HEIGHT):
                     fx = math.cos(angle) * force
                     fy = math.sin(angle) * force
                     bird.body.apply_impulse_at_local_point((-fx, fy), (0, 0))
-            if event.type == pygame.MOUSEBUTTONDOWN and reset_rect_background.collidepoint(mouse_pos):
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if reset_rect.collidepoint(mouse_pos):
+                    #restarting level
 
-                #clearing space
-                for enemy in enemies:
-                    space.remove(enemy.shape, enemy.body)
-                enemies.clear()
-                for obstacle in obstacles:
-                    space.remove(obstacle.shape, obstacle.body)
-                obstacles.clear()
-                for bird in birds:
-                    space.remove(bird.shape, bird.body)
-                birds.clear()
+                    #clearing space
+                    clear_space(space)
 
-                #reseting lifes
-                lifes = 3
+                    #reseting lifes
+                    lifes = 3
 
-                #trying to load level
-                try:
+                    #trying to load level
+                    try:
+                        level.load_level(level_number)
+                        bird = Bird(space)
+                        birds.append(bird)
+                    except:
+                        print('you\'ve won')
+                        level_number = 0
+                if reset_game_rect.collidepoint(mouse_pos):
+                    #restarting game
+                    clear_space(space)
+                    lifes = 3
+                    level_number = 1
                     level.load_level(level_number)
                     bird = Bird(space)
                     birds.append(bird)
-                except:
-                    print('you\'ve won')
-                    level = 0
-
 
         # level loading
-        if len(enemies) == 0 and level != 0:
+        if len(enemies) == 0 and level_number != 0:
             print('level cleared')
 
             #clearing space
-            for obstacle in obstacles:
-                space.remove(obstacle.shape, obstacle.body)
-            obstacles.clear()
-            for bird in birds:
-                space.remove(bird.shape, bird.body)
-            birds.clear()
+            clear_space(space)
 
             #reseting lifes
             lifes = 3
@@ -191,7 +207,7 @@ def main(screen, WIDTH, HEIGHT):
                 birds.append(bird)
             except:
                 print('you\'ve won')
-                level = 0
+                level_number = 0
 
         screen.fill('lightblue')
 
@@ -217,9 +233,15 @@ def main(screen, WIDTH, HEIGHT):
         for obstacle in obstacles:
             obstacle.draw_obstacle(screen)
 
+        # drawing restart level button
         pygame.draw.rect(screen, 'red', reset_rect_background)
         pygame.draw.rect(screen, 'white', reset_rect)
         screen.blit(reset_surface, reset_rect)
+
+        #drawing restart game button
+        pygame.draw.rect(screen, 'red', reset_game_rect_background)
+        pygame.draw.rect(screen, 'white', reset_game_rect)
+        screen.blit(reset_game_surface, reset_game_rect)
 
         pygame.display.update()
 

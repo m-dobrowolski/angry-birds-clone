@@ -38,7 +38,7 @@ class Obstacle:
 
 class Bird:
     def __init__(self, space):
-        radius = 20
+        radius = 15
 
         bird_start_pos_pm = (150, 200)
         bird_start_pos_pg = convert_coords(bird_start_pos_pm)
@@ -59,12 +59,12 @@ class Bird:
 
     def draw(self, screen):
         self.bird_rect.center = convert_coords(self.shape.body.position)
-        pygame.draw.circle(screen, 'black', self.bird_rect.center, 20)
+        pygame.draw.circle(screen, 'black', self.bird_rect.center, 15)
 
 
 class Enemy:
     def __init__(self, pos, space):
-        radius = 20
+        radius = 15
         mass = 10
 
         body = pymunk.Body(body_type=pymunk.Body.DYNAMIC)
@@ -80,4 +80,4 @@ class Enemy:
 
     def draw_enemy(self, screen):
         pos = convert_coords(self.shape.body.position)
-        pygame.draw.circle(screen, 'green', pos, 20)
+        pygame.draw.circle(screen, 'green', pos, 15)
