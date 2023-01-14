@@ -61,7 +61,7 @@ def collision_bird_obstacle(arbiter, space, data):
 
 def collision_enemy_obstacle(arbiter, space, data):
     enemy_shape, obstacle_shape = arbiter.shapes
-    if arbiter.total_impulse.length > 5000:
+    if arbiter.total_impulse.length > 4000:
         for enemy in enemies:
             if enemy_shape.body == enemy.body:
                 space.remove(enemy.shape, enemy.shape.body)
@@ -147,6 +147,20 @@ def main(screen, WIDTH, HEIGHT):
             if event.type == pygame.QUIT:
                 run = False
                 break
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_n:
+                    #loading next level (press 'n')
+                    clear_space(space)
+                    lifes = 3
+                    level_number += 1
+                    #trying to load level
+                    try:
+                        level.load_level(level_number)
+                        bird = Bird(space)
+                        birds.append(bird)
+                    except:
+                        print('you\'ve won')
+                        level_number = 0
             if lifes:
                 if not stretched and bird.bird_rect.collidepoint(mouse_pos):
                     if event.type == pygame.MOUSEBUTTONDOWN:

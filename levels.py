@@ -13,11 +13,12 @@ class Level:
 
     def level1(self):
         obstacles = [
-            Obstacle(self.space, (600, 150), 'column'),
-            Obstacle(self.space, (600, 210), 'beam')
+            Obstacle(self.space, (800, 150), 'column'),
+            Obstacle(self.space, (880, 150), 'column'),
+            Obstacle(self.space, (840, 210), 'beam')
         ]
         enemies = [
-            Enemy((600, 240), self.space)
+            Enemy((840, 115), self.space)
         ]
         for obstacle in obstacles:
             self.obstacles.append(obstacle)
@@ -26,11 +27,81 @@ class Level:
 
     def level2(self):
         obstacles = [
-            Obstacle(self.space, (600, 150), 'column'),
-            Obstacle(self.space, (680, 150), 'column')
+            Obstacle(self.space, (680, 150), 'column'),
+            Obstacle(self.space, (760, 150), 'column'),
+            Obstacle(self.space, (840, 150), 'column'),
+            Obstacle(self.space, (800, 210), 'beam')
         ]
         enemies = [
-            Enemy((640, 120), self.space)
+            Enemy((720, 115), self.space),
+            Enemy((800, 115), self.space)
+        ]
+        for obstacle in obstacles:
+            self.obstacles.append(obstacle)
+        for enemy in enemies:
+            self.enemies.append(enemy)
+
+    def level3(self):
+        obstacles = [
+            Obstacle(self.space, (760, 150), 'column'),
+            Obstacle(self.space, (840, 150), 'column'),
+            Obstacle(self.space, (800, 210), 'beam'),
+            Obstacle(self.space, (760, 270), 'column'),
+            Obstacle(self.space, (840, 270), 'column'),
+            Obstacle(self.space, (800, 330), 'beam'),
+            Obstacle(self.space, (760, 390), 'column'),
+            Obstacle(self.space, (840, 390), 'column'),
+            Obstacle(self.space, (800, 450), 'beam'),
+        ]
+        enemies = [
+            Enemy((800, 345), self.space),
+            Enemy((800, 115), self.space)
+        ]
+        for obstacle in obstacles:
+            self.obstacles.append(obstacle)
+        for enemy in enemies:
+            self.enemies.append(enemy)
+
+    def level4(self):
+        obstacles = [
+            Obstacle(self.space, (680, 150), 'column'),
+            Obstacle(self.space, (770, 150), 'column'),
+            Obstacle(self.space, (720, 210), 'beam'),
+            Obstacle(self.space, (860, 150), 'column'),
+            Obstacle(self.space, (820, 210), 'beam'),
+            Obstacle(self.space, (730, 270), 'column'),
+            Obstacle(self.space, (810, 270), 'column'),
+            Obstacle(self.space, (770, 330), 'beam'),
+        ]
+        enemies = [
+            Enemy((720, 115), self.space),
+            Enemy((820, 115), self.space),
+            Enemy((770, 225), self.space),
+        ]
+        for obstacle in obstacles:
+            self.obstacles.append(obstacle)
+        for enemy in enemies:
+            self.enemies.append(enemy)
+
+    def level5(self):
+        obstacles = [
+            Obstacle(self.space, (580, 150), 'column'),
+            Obstacle(self.space, (620, 210), 'beam'),
+            Obstacle(self.space, (670, 150), 'column'),
+            Obstacle(self.space, (770, 150), 'column'),
+            Obstacle(self.space, (720, 210), 'beam'),
+            Obstacle(self.space, (860, 150), 'column'),
+            Obstacle(self.space, (820, 210), 'beam'),
+            Obstacle(self.space, (580, 270), 'column'),
+            Obstacle(self.space, (620, 330), 'beam'),
+            Obstacle(self.space, (670, 270), 'column'),
+            Obstacle(self.space, (770, 270), 'column'),
+            Obstacle(self.space, (720, 330), 'beam'),
+            Obstacle(self.space, (860, 270), 'column'),
+            Obstacle(self.space, (820, 330), 'beam'),
+        ]
+        enemies = [
+            Enemy((720, 115), self.space)
         ]
         for obstacle in obstacles:
             self.obstacles.append(obstacle)
