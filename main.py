@@ -10,6 +10,7 @@ WIDTH = 1000
 HEIGHT = 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 font = pygame.font.Font(None, 50)
+big_font = pygame.font.Font(None, 200)
 
 enemies = []
 obstacles = []
@@ -95,6 +96,7 @@ def main(screen, WIDTH, HEIGHT):
 
     shooted = False
     stretched = False
+    level_cleared = False
 
     bird = Bird(space)
     birds.append(bird)
@@ -126,14 +128,33 @@ def main(screen, WIDTH, HEIGHT):
     #restart game button
     message = 'Restart game'
     reset_game_surface = font.render(message, True, (64, 64, 64))
-    reset_game_rect = reset_game_surface.get_rect(bottomright=(WIDTH - 15 - reset_rect_background.width, HEIGHT - 10))
+    reset_game_rect = reset_game_surface.get_rect(bottomright=(reset_rect_background.left - 15, HEIGHT - 10))
     reset_game_rect_background = reset_game_rect.move(-5, -5)
     reset_game_rect_background.height += 10
     reset_game_rect_background.width += 10
 
+    #you've won
+    message = 'YOU\'VE WON!'
+    win_surf = big_font.render(message, True, (64, 64, 64))
+    win_rect = win_surf.get_rect(center=(WIDTH/2, HEIGHT/3))
+
+    #level cleared
+    message = 'Level cleared!'
+    lvl_cleared_surf = big_font.render(message, True, (64, 64, 64))
+    lvl_cleared_rect = lvl_cleared_surf.get_rect(center=(WIDTH/2, HEIGHT/3))
+
+    #next level button
+    message = 'Next level'
+    next_lvl_surf = font.render(message, True, (64, 64, 64))
+    next_lvl_rect = next_lvl_surf.get_rect(bottomright=(reset_game_rect_background.left - 15, HEIGHT - 10))
+    next_lvl_rect_background = next_lvl_rect.move(-5, -5)
+    next_lvl_rect_background.height += 10
+    next_lvl_rect_background.width += 10
+
     while run:
         mouse_pos = pygame.mouse.get_pos()
 
+        # adding bird to shoot
         if lifes and shooted:
             shooted = False
             bird = Bird(space)
@@ -149,7 +170,7 @@ def main(screen, WIDTH, HEIGHT):
                 break
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_n:
-                    #loading next level (press 'n')
+                    #cheat, used to load next level (press 'n')
                     clear_space(space)
                     lifes = 3
                     level_number += 1
@@ -179,7 +200,7 @@ def main(screen, WIDTH, HEIGHT):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if reset_rect.collidepoint(mouse_pos):
                     #restarting level
-
+                    level_cleared = False
                     #clearing space
                     clear_space(space)
 
@@ -196,32 +217,27 @@ def main(screen, WIDTH, HEIGHT):
                         level_number = 0
                 if reset_game_rect.collidepoint(mouse_pos):
                     #restarting game
+                    level_cleared = False
                     clear_space(space)
                     lifes = 3
                     level_number = 1
                     level.load_level(level_number)
                     bird = Bird(space)
                     birds.append(bird)
-
-        # level loading
-        if len(enemies) == 0 and level_number != 0:
-            print('level cleared')
-
-            #clearing space
-            clear_space(space)
-
-            #reseting lifes
-            lifes = 3
-
-            #trying to load level
-            level_number += 1
-            try:
-                level.load_level(level_number)
-                bird = Bird(space)
-                birds.append(bird)
-            except:
-                print('you\'ve won')
-                level_number = 0
+                if len(enemies) == 0 and next_lvl_rect.collidepoint(mouse_pos):
+                    # next level button
+                    clear_space(space)
+                    lifes = 3
+                    level_number += 1
+                    #trying to load level
+                    try:
+                        level.load_level(level_number)
+                        bird = Bird(space)
+                        birds.append(bird)
+                    except:
+                        print('you\'ve won')
+                        level_number = 0
+                    level_cleared = False
 
         screen.fill('lightblue')
 
@@ -256,6 +272,24 @@ def main(screen, WIDTH, HEIGHT):
         pygame.draw.rect(screen, 'red', reset_game_rect_background)
         pygame.draw.rect(screen, 'white', reset_game_rect)
         screen.blit(reset_game_surface, reset_game_rect)
+
+        #displaying you've won message
+        if level_number == 0:
+            screen.blit(win_surf, win_rect)
+
+        if len(enemies) == 0:
+            level_cleared = True
+            lifes = 0
+
+        # level cleared message
+        if level_cleared is True and level_number != 0:
+            print('level cleared')
+            clear_space(space)
+            screen.blit(lvl_cleared_surf, lvl_cleared_rect)
+            #next level button
+            pygame.draw.rect(screen, 'red', next_lvl_rect_background)
+            pygame.draw.rect(screen, 'white', next_lvl_rect)
+            screen.blit(next_lvl_surf, next_lvl_rect)
 
         pygame.display.update()
 
