@@ -24,13 +24,16 @@ space.gravity = (0, -600)
 level = Level(space, enemies, obstacles)
 level_number = 1  # if level number == 0, you've won the game
 
-def load_level(level_number):
-    level.load_level(level_number)
-    global lifes
-    lifes = level.lifes
-    global bird
-    bird = Bird(space)
-    birds.append(bird)
+def load_level(level_num):
+    global lifes, bird, level_number
+    try:
+        level.load_level(level_num)
+        lifes = level.lifes
+        bird = Bird(space)
+        birds.append(bird)
+    except AttributeError:
+        level_number = 0
+
 
 def convert_coords(coords):
     '''converts coordinates from pymunk to pygame'''
@@ -188,11 +191,7 @@ def main(screen):
                     # cheat, used to load next level (press 'n')
                     clear_space(space)
                     level_number += 1
-                    # trying to load level
-                    try:
-                        load_level(level_number)
-                    except AttributeError:
-                        level_number = 0
+                    load_level(level_number)
             if lifes:
                 if not stretched and bird.bird_rect.collidepoint(mouse_pos):
                     if event.type == pygame.MOUSEBUTTONDOWN:
@@ -214,12 +213,8 @@ def main(screen):
                     # restarting level
                     level_cleared = False
                     clear_space(space)
+                    load_level(level_number)
 
-                    # trying to load level
-                    try:
-                        load_level(level_number)
-                    except AttributeError:
-                        level_number = 0
                 if reset_game_rect.collidepoint(mouse_pos):
                     # restarting game
                     level_cleared = False
@@ -228,16 +223,10 @@ def main(screen):
                     load_level(level_number)
                 if (level_cleared is True and
                         next_lvl_rect.collidepoint(mouse_pos)):
-
                     # next level button
                     clear_space(space)
                     level_number += 1
-
-                    # trying to load level
-                    try:
-                        load_level(level_number)
-                    except AttributeError:
-                        level_number = 0
+                    load_level(level_number)
                     level_cleared = False
 
         screen.fill('lightblue')
