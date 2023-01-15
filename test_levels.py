@@ -1,5 +1,6 @@
 from levels import Level, NotExistantLevel
-import pymunk, pytest
+import pymunk
+import pytest
 
 
 def test_level_loading():
