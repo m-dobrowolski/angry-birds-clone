@@ -7,6 +7,7 @@ class Level:
         self.space = space
         self.enemies = enemies
         self.obstacles = obstacles
+        self.lifes = 0
 
     def load_level(self, level):
         '''loads level'''
@@ -15,6 +16,7 @@ class Level:
         load_level()
 
     def level1(self):
+        self.lifes = 2
         obstacles = [
             Obstacle(self.space, (800, 150), 'column'),
             Obstacle(self.space, (880, 150), 'column'),
@@ -29,6 +31,7 @@ class Level:
             self.enemies.append(enemy)
 
     def level2(self):
+        self.lifes = 3
         obstacles = [
             Obstacle(self.space, (680, 150), 'column'),
             Obstacle(self.space, (760, 150), 'column'),
@@ -45,6 +48,7 @@ class Level:
             self.enemies.append(enemy)
 
     def level3(self):
+        self.lifes = 3
         obstacles = [
             Obstacle(self.space, (760, 150), 'column'),
             Obstacle(self.space, (840, 150), 'column'),
@@ -66,6 +70,7 @@ class Level:
             self.enemies.append(enemy)
 
     def level4(self):
+        self.lifes = 3
         obstacles = [
             Obstacle(self.space, (680, 150), 'column'),
             Obstacle(self.space, (770, 150), 'column'),
@@ -87,6 +92,7 @@ class Level:
             self.enemies.append(enemy)
 
     def level5(self):
+        self.lifes = 4
         obstacles = [
             Obstacle(self.space, (580, 150), 'column'),
             Obstacle(self.space, (620, 210), 'beam'),

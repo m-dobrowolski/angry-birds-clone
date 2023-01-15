@@ -8,6 +8,7 @@ pygame.init()
 
 WIDTH = 1000
 HEIGHT = 600
+
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 font = pygame.font.Font(None, 50)
 big_font = pygame.font.Font(None, 200)
@@ -15,7 +16,21 @@ big_font = pygame.font.Font(None, 200)
 enemies = []
 obstacles = []
 birds = []
+lifes = 0
 
+space = pymunk.Space()
+space.gravity = (0, -600)
+
+level = Level(space, enemies, obstacles)
+level_number = 1  # if level number == 0, you've won the game
+
+def load_level(level_number):
+    level.load_level(level_number)
+    global lifes
+    lifes = level.lifes
+    global bird
+    bird = Bird(space)
+    birds.append(bird)
 
 def convert_coords(coords):
     '''converts coordinates from pymunk to pygame'''
@@ -96,9 +111,6 @@ def main(screen):
     step_time = 1/FPS
     clock = pygame.time.Clock()
 
-    space = pymunk.Space()
-    space.gravity = (0, -600)
-
     create_ground(space)
     ground_rect = pygame.Rect(0, HEIGHT - 100, WIDTH, 100)
 
@@ -106,19 +118,10 @@ def main(screen):
     stretched = False
     level_cleared = False
 
-    bird = Bird(space)
-    birds.append(bird)
-    lifes = 3  # 3 birds to shoot
-
-    # enemy = Enemy((600, 240), space)
-    # enemies.append(enemy)
-
-    # obstacles.append(Obstacle(space, (600, 150), 'column'),)
-    # obstacles.append(Obstacle(space, (600, 210), 'beam'))
-
-    level = Level(space, enemies, obstacles)
-    level_number = 1
-    level.load_level(level_number)
+    global lifes
+    global bird
+    global level_number
+    load_level(level_number)
 
     space.add_collision_handler(1, 2).post_solve = collision_bird_enemy
     space.add_collision_handler(1, 3).post_solve = collision_bird_obstacle
@@ -184,13 +187,10 @@ def main(screen):
                 if event.key == pygame.K_n:
                     # cheat, used to load next level (press 'n')
                     clear_space(space)
-                    lifes = 3
                     level_number += 1
                     # trying to load level
                     try:
-                        level.load_level(level_number)
-                        bird = Bird(space)
-                        birds.append(bird)
+                        load_level(level_number)
                     except AttributeError:
                         level_number = 0
             if lifes:
@@ -215,38 +215,27 @@ def main(screen):
                     level_cleared = False
                     clear_space(space)
 
-                    # reseting lifes                            # to change in the future
-                    lifes = 3
-
                     # trying to load level
                     try:
-                        level.load_level(level_number)
-                        bird = Bird(space)
-                        birds.append(bird)
+                        load_level(level_number)
                     except AttributeError:
                         level_number = 0
                 if reset_game_rect.collidepoint(mouse_pos):
                     # restarting game
                     level_cleared = False
                     clear_space(space)
-                    lifes = 3
                     level_number = 1
-                    level.load_level(level_number)
-                    bird = Bird(space)
-                    birds.append(bird)
+                    load_level(level_number)
                 if (level_cleared is True and
                         next_lvl_rect.collidepoint(mouse_pos)):
 
                     # next level button
                     clear_space(space)
-                    lifes = 3
                     level_number += 1
 
                     # trying to load level
                     try:
-                        level.load_level(level_number)
-                        bird = Bird(space)
-                        birds.append(bird)
+                        load_level(level_number)
                     except AttributeError:
                         level_number = 0
                     level_cleared = False
