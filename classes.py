@@ -30,8 +30,10 @@ class Obstacle:
     def draw_obstacle(self, screen):
         '''draws obstacle on the screen'''
         points = []
-        for vector in self.shape.get_vertices():
-            x, y = vector.rotated(self.shape.body.angle) + self.shape.body.position
+        vertices = self.shape.get_vertices()
+        for vector in vertices:
+            angle = self.shape.body.angle
+            x, y = vector.rotated(angle) + self.shape.body.position
             points.append(convert_coords((int(x), int(y))))
         pygame.draw.lines(screen, 'black', True, points)
 

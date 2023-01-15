@@ -22,11 +22,14 @@ def convert_coords(coords):
     return int(coords[0]), int(HEIGHT - coords[1])
 
 
-def calculate_distanes(p1, p2):
+def calculate_distance(p1, p2):
+    '''calculate distance between two points'''
     return math.sqrt((p2[1] - p1[1])**2 + (p2[0] - p1[0])**2)
 
 
-def calculate_angle(p1, p2):  # calculate  like p2 is (0, 0)
+def calculate_angle(p1, p2):
+    '''calculates angle of shoot'''
+    p1, p2 = convert_coords(p1), convert_coords(p2)
     return math.atan2((p2[1] - p1[1]), (p2[0] - p1[0]))
 
 
@@ -202,10 +205,10 @@ def main(screen):
                     shooted = True
                     bird.body.body_type = pymunk.Body.DYNAMIC
                     angle = calculate_angle(*line)
-                    force = calculate_distanes(*line) * 50
+                    force = calculate_distance(*line) * 50
                     fx = math.cos(angle) * force
                     fy = math.sin(angle) * force
-                    bird.body.apply_impulse_at_local_point((-fx, fy), (0, 0))
+                    bird.body.apply_impulse_at_local_point((-fx, -fy), (0, 0))
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if reset_rect.collidepoint(mouse_pos):
                     # restarting level
