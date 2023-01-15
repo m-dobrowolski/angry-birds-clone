@@ -2,7 +2,7 @@ import pygame
 import pymunk
 import math
 from classes import Bird
-from levels import Level
+from levels import Level, NotExistantLevel
 
 pygame.init()
 
@@ -31,7 +31,7 @@ def load_level(level_num):
         lifes = level.lifes
         bird = Bird(space)
         birds.append(bird)
-    except AttributeError:
+    except NotExistantLevel:
         level_number = 0
 
 
@@ -189,6 +189,7 @@ def main(screen):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_n:
                     # cheat, used to load next level (press 'n')
+                    level_cleared = False
                     clear_space(space)
                     level_number += 1
                     load_level(level_number)
@@ -222,7 +223,8 @@ def main(screen):
                     level_number = 1
                     load_level(level_number)
                 if (level_cleared is True and
-                        next_lvl_rect.collidepoint(mouse_pos)):
+                        next_lvl_rect.collidepoint(mouse_pos) and
+                        level_number != 0):
                     # next level button
                     clear_space(space)
                     level_number += 1
