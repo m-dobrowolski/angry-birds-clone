@@ -24,6 +24,7 @@ space.gravity = (0, -600)
 level = Level(space, enemies, obstacles)
 level_number = 1  # if level number == 0, you've won the game
 
+
 def load_level(level_num):
     global lifes, bird, level_number
     try:
@@ -52,6 +53,7 @@ def calculate_angle(p1, p2):
 
 
 def display_lifes(screen, lifes):
+    '''display lifes on the screen'''
     message = f'Birds left: {lifes}'
     lifes_surface = font.render(message, True, (64, 64, 64))
     lifes_rect = lifes_surface.get_rect(bottomleft=(20, HEIGHT - 20))
@@ -64,11 +66,13 @@ def create_ground(space):
     shape = pymunk.Poly.create_box(body, (WIDTH, 100))
     shape.elasticity = 0.7
     shape.friction = 0.4
+    shape.collision_type = 4
     space.add(body, shape)
     return shape
 
 
 def collision_bird_enemy(arbiter, space, data):
+    '''handles collision between bird and enemy'''
     bird_shape, enemy_shape = arbiter.shapes
     for enemy in enemies:
         if enemy_shape.body == enemy.body:
@@ -77,8 +81,9 @@ def collision_bird_enemy(arbiter, space, data):
 
 
 def collision_bird_obstacle(arbiter, space, data):
+    '''handles collision between bird and obstacle'''
     bird_shape, obstacle_shape = arbiter.shapes
-    if arbiter.total_impulse.length > 2500:  # popraw wartości
+    if arbiter.total_impulse.length > 2500:
         for obstacle in obstacles:
             if obstacle_shape.body == obstacle.body:
                 space.remove(obstacle.shape, obstacle.body)
@@ -86,7 +91,18 @@ def collision_bird_obstacle(arbiter, space, data):
 
 
 def collision_enemy_obstacle(arbiter, space, data):
+    '''handles collision between enemy and obstacle'''
     enemy_shape, obstacle_shape = arbiter.shapes
+    if arbiter.total_impulse.length > 4000:
+        for enemy in enemies:
+            if enemy_shape.body == enemy.body:
+                space.remove(enemy.shape, enemy.shape.body)
+                enemies.remove(enemy)
+
+
+def collision_enemy_ground(arbiter, space, data):
+    '''handles collision between enemy and ground'''
+    enemy_shape, ground_shape = arbiter.shapes
     if arbiter.total_impulse.length > 4000:
         for enemy in enemies:
             if enemy_shape.body == enemy.body:
@@ -129,6 +145,7 @@ def main(screen):
     space.add_collision_handler(1, 2).post_solve = collision_bird_enemy
     space.add_collision_handler(1, 3).post_solve = collision_bird_obstacle
     space.add_collision_handler(2, 3).post_solve = collision_enemy_obstacle
+    space.add_collision_handler(2, 4).post_solve = collision_enemy_ground
 
     # restart level button
     message = 'Restart level'
