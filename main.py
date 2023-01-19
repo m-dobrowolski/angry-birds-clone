@@ -166,6 +166,67 @@ def limit_line(center_pos, mouse_pos, length):
 
     return line
 
+def add_collision(space):
+    space.add_collision_handler(1, 2).post_solve = collision_bird_enemy
+    space.add_collision_handler(1, 3).post_solve = collision_bird_obstacle
+    space.add_collision_handler(2, 3).post_solve = collision_enemy_obstacle
+    space.add_collision_handler(2, 4).post_solve = collision_enemy_ground
+
+
+def draw(screen, ground_rect, line, restart_level_button, restart_game_button,
+         next_lvl_button, win_surf, win_rect, lvl_cleared_surf,
+         lvl_cleared_rect):
+    global lifes, level_cleared
+
+    screen.fill('lightblue')
+    # drawing birds
+    for bird in birds:
+        bird.draw(screen)
+
+    # drawing enemies
+    for enemy in enemies:
+        enemy.draw_enemy(screen)
+
+    # drawing the ground
+    pygame.draw.rect(screen, 'green', ground_rect)
+
+    # displaying birds left to shoot
+    if level_number != 0:
+        display_lifes(screen, lifes)
+
+    # drawing a line between a bird and mouse
+    if line:
+        pygame.draw.line(screen, 'red', line[0], line[1], 3)
+
+    # drawing obstacles
+    for obstacle in obstacles:
+        obstacle.draw_obstacle(screen)
+
+    # drawing restart level button
+    if level_number != 0:
+        restart_level_button.draw(screen)
+
+    # drawing restart game button
+    restart_game_button.draw(screen)
+
+    # displaying you've won message
+    if level_number == 0:
+        screen.blit(win_surf, win_rect)
+
+    if len(enemies) == 0:
+        level_cleared = True
+        lifes = 0
+
+    # level cleared message
+    if level_cleared is True and level_number != 0:
+        clear_space(space)
+        screen.blit(lvl_cleared_surf, lvl_cleared_rect)
+        # next level button
+        next_lvl_button.draw(screen)
+
+    pygame.display.update()
+
+
 
 def main(screen):
     global stretched, shooted, level_cleared, lifes, bird, level_number
@@ -175,16 +236,15 @@ def main(screen):
     step_time = 1/FPS
     clock = pygame.time.Clock()
 
+    # creating ground
     create_ground(space)
     ground_rect = pygame.Rect(0, HEIGHT - 100, WIDTH, 100)
 
     load_level(level_number)
 
-    # handling collision
-    space.add_collision_handler(1, 2).post_solve = collision_bird_enemy
-    space.add_collision_handler(1, 3).post_solve = collision_bird_obstacle
-    space.add_collision_handler(2, 3).post_solve = collision_enemy_obstacle
-    space.add_collision_handler(2, 4).post_solve = collision_enemy_ground
+    # adding collision
+    add_collision(space)
+
 
     # restart level button
     message = 'Restart level'
@@ -257,54 +317,9 @@ def main(screen):
                     level_number += 1
                     load_level(level_number)
 
-        screen.fill('lightblue')
-
-        # drawing birds
-        for bird in birds:
-            bird.draw(screen)
-
-        # drawing enemies
-        for enemy in enemies:
-            enemy.draw_enemy(screen)
-
-        # drawing the ground
-        pygame.draw.rect(screen, 'green', ground_rect)
-
-        # displaying birds left to shoot
-        if level_number != 0:
-            display_lifes(screen, lifes)
-
-        # drawing a line between a bird and mouse
-        if line:
-            pygame.draw.line(screen, 'red', line[0], line[1], 3)
-
-        # drawing obstacles
-        for obstacle in obstacles:
-            obstacle.draw_obstacle(screen)
-
-        # drawing restart level button
-        if level_number != 0:
-            restart_level_button.draw(screen)
-
-        # drawing restart game button
-        restart_game_button.draw(screen)
-
-        # displaying you've won message
-        if level_number == 0:
-            screen.blit(win_surf, win_rect)
-
-        if len(enemies) == 0:
-            level_cleared = True
-            lifes = 0
-
-        # level cleared message
-        if level_cleared is True and level_number != 0:
-            clear_space(space)
-            screen.blit(lvl_cleared_surf, lvl_cleared_rect)
-            # next level button
-            next_lvl_button.draw(screen)
-
-        pygame.display.update()
+        draw(screen, ground_rect, line, restart_level_button, restart_game_button,
+             next_lvl_button, win_surf, win_rect, lvl_cleared_surf,
+             lvl_cleared_rect)
 
         space.step(step_time)
         clock.tick(FPS)
