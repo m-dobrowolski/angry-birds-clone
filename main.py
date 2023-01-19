@@ -25,8 +25,9 @@ level = Level(space, enemies, obstacles)
 level_number = 1  # if level number == 0, you've won the game
 
 
-def load_level(level_num):
+def load_level(level_num, space):
     global lifes, bird, level_number
+    clear_space(space)
     try:
         level.load_level(level_num)
         lifes = level.lifes
@@ -140,7 +141,7 @@ def main(screen):
     global lifes
     global bird
     global level_number
-    load_level(level_number)
+    load_level(level_number, space)
 
     space.add_collision_handler(1, 2).post_solve = collision_bird_enemy
     space.add_collision_handler(1, 3).post_solve = collision_bird_obstacle
@@ -209,7 +210,7 @@ def main(screen):
                     level_cleared = False
                     clear_space(space)
                     level_number += 1
-                    load_level(level_number)
+                    load_level(level_number, space)
             if lifes:
                 if not stretched and bird.bird_rect.collidepoint(mouse_pos):
                     if event.type == pygame.MOUSEBUTTONDOWN:
@@ -230,22 +231,25 @@ def main(screen):
                 if reset_rect.collidepoint(mouse_pos):
                     # restarting level
                     level_cleared = False
+                    shooted = False
                     clear_space(space)
-                    load_level(level_number)
+                    load_level(level_number, space)
 
                 if reset_game_rect.collidepoint(mouse_pos):
                     # restarting game
                     level_cleared = False
+                    shooted = False
                     clear_space(space)
                     level_number = 1
-                    load_level(level_number)
+                    load_level(level_number, space)
                 if (level_cleared is True and
                         next_lvl_rect.collidepoint(mouse_pos) and
                         level_number != 0):
                     # next level button
+                    shooted = False
                     clear_space(space)
                     level_number += 1
-                    load_level(level_number)
+                    load_level(level_number, space)
                     level_cleared = False
 
         screen.fill('lightblue')
