@@ -56,7 +56,6 @@ def calculate_distance(p1, p2):
 
 def calculate_angle(p1, p2):
     '''calculates angle of shoot'''
-    p1, p2 = convert_coords(p1), convert_coords(p2)
     return math.atan2((p2[1] - p1[1]), (p2[0] - p1[0]))
 
 
@@ -137,8 +136,9 @@ def shoot_bird(line):
     stretched = False
     shooted = True
     bird.body.body_type = pymunk.Body.DYNAMIC
-    angle = calculate_angle(*line)
-    force = calculate_distance(*line) * 50
+    line_converted = (convert_coords(line[0]), convert_coords(line[1]))
+    angle = calculate_angle(*line_converted)
+    force = calculate_distance(*line_converted) * 60
     fx = math.cos(angle) * force
     fy = math.sin(angle) * force
     bird.body.apply_impulse_at_local_point((-fx, -fy), (0, 0))
@@ -152,7 +152,23 @@ def restart_level():
     load_level(level_number)
 
 
+def limit_line(center_pos, mouse_pos, length):
+    '''limits line to specific length'''
+    if calculate_distance(center_pos, mouse_pos) > length:
+        angle = calculate_angle(center_pos, mouse_pos)
+        x_pos, y_pos = bird.bird_rect.center
+        x_pos += length * math.cos(angle)
+        y_pos += length * math.sin(angle)
+        end_point = (x_pos, y_pos)
+        line = (bird.bird_rect.center, end_point)
+    else:
+        line = (bird.bird_rect.center, mouse_pos)
+
+    return line
+
+
 def main(screen):
+    global stretched, shooted, level_cleared, lifes, bird, level_number
     run = True
 
     FPS = 60
@@ -162,9 +178,9 @@ def main(screen):
     create_ground(space)
     ground_rect = pygame.Rect(0, HEIGHT - 100, WIDTH, 100)
 
-    global stretched, shooted, level_cleared, lifes, bird, level_number
     load_level(level_number)
 
+    # handling collision
     space.add_collision_handler(1, 2).post_solve = collision_bird_enemy
     space.add_collision_handler(1, 3).post_solve = collision_bird_obstacle
     space.add_collision_handler(2, 3).post_solve = collision_enemy_obstacle
@@ -207,7 +223,7 @@ def main(screen):
         # coords of a line if it exist, used to calculate force of shoot
         line = None
         if stretched is True:
-            line = (bird.bird_rect.center, mouse_pos)
+            line = limit_line(bird.bird_rect.center, mouse_pos, 120)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -269,6 +285,7 @@ def main(screen):
         # drawing restart level button
         if level_number != 0:
             restart_level_button.draw(screen)
+
         # drawing restart game button
         restart_game_button.draw(screen)
 
