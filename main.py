@@ -3,6 +3,7 @@ import pymunk
 import math
 from classes import Bird
 from levels import Level, NotExistantLevel
+from button import Button
 
 pygame.init()
 
@@ -171,41 +172,28 @@ def main(screen):
 
     # restart level button
     message = 'Restart level'
-    reset_surface = font.render(message, True, (64, 64, 64))
-    reset_rect = reset_surface.get_rect(bottomright=(WIDTH - 10, HEIGHT - 10))
-    reset_rect_background = reset_rect.move(-5, -5)
-    reset_rect_background.height += 10
-    reset_rect_background.width += 10
+    pos = (WIDTH - 10, HEIGHT - 10)
+    restart_level_button = Button(message, font, pos)
 
     # restart game button
     message = 'Restart game'
-    reset_game_surface = font.render(message, True, (64, 64, 64))
-    reset_game_rect = reset_game_surface.get_rect(
-        bottomright=(reset_rect_background.left - 15, HEIGHT - 10)
-    )
-    reset_game_rect_background = reset_game_rect.move(-5, -5)
-    reset_game_rect_background.height += 10
-    reset_game_rect_background.width += 10
+    pos = (restart_level_button.rect.left - 20, HEIGHT - 10)
+    restart_game_button = Button(message, font, pos)
 
     # you've won message
     message = 'YOU\'VE WON!'
     win_surf = big_font.render(message, True, (64, 64, 64))
     win_rect = win_surf.get_rect(center=(WIDTH/2, HEIGHT/3))
 
+    # next level button
+    message = 'Next level'
+    pos = (restart_game_button.rect.left - 20, HEIGHT - 10)
+    next_lvl_button = Button(message, font, pos)
+
     # level cleared message
     message = 'Level cleared!'
     lvl_cleared_surf = big_font.render(message, True, (64, 64, 64))
     lvl_cleared_rect = lvl_cleared_surf.get_rect(center=(WIDTH/2, HEIGHT/3))
-
-    # next level button
-    message = 'Next level'
-    next_lvl_surf = font.render(message, True, (64, 64, 64))
-    next_lvl_rect = next_lvl_surf.get_rect(
-        bottomright=(reset_game_rect_background.left - 15, HEIGHT - 10)
-    )
-    next_lvl_rect_background = next_lvl_rect.move(-5, -5)
-    next_lvl_rect_background.height += 10
-    next_lvl_rect_background.width += 10
 
     while run:
         mouse_pos = pygame.mouse.get_pos()
@@ -216,7 +204,7 @@ def main(screen):
             bird = Bird(space)
             birds.append(bird)
 
-        # coords of a line if exist
+        # coords of a line if it exist, used to calculate force of shoot
         line = None
         if stretched is True:
             line = (bird.bird_rect.center, mouse_pos)
@@ -228,8 +216,6 @@ def main(screen):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_n:
                     # cheat, used to load next level (press 'n')
-                    level_cleared = False
-                    clear_space(space)
                     level_number += 1
                     load_level(level_number)
             if lifes:
@@ -241,15 +227,15 @@ def main(screen):
                     # shooting a bird
                     shoot_bird(line)
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if reset_rect.collidepoint(mouse_pos):
+                if restart_level_button.rect.collidepoint(mouse_pos):
                     # restarting level
                     load_level(level_number)
-                if reset_game_rect.collidepoint(mouse_pos):
+                if restart_game_button.rect.collidepoint(mouse_pos):
                     # restarting game
                     level_number = 1
                     load_level(level_number)
                 if (level_cleared is True and
-                        next_lvl_rect.collidepoint(mouse_pos) and
+                        next_lvl_button.rect.collidepoint(mouse_pos) and
                         level_number != 0):
                     # next level
                     level_number += 1
@@ -282,14 +268,9 @@ def main(screen):
 
         # drawing restart level button
         if level_number != 0:
-            pygame.draw.rect(screen, 'red', reset_rect_background)
-            pygame.draw.rect(screen, 'white', reset_rect)
-            screen.blit(reset_surface, reset_rect)
-
+            restart_level_button.draw(screen)
         # drawing restart game button
-        pygame.draw.rect(screen, 'red', reset_game_rect_background)
-        pygame.draw.rect(screen, 'white', reset_game_rect)
-        screen.blit(reset_game_surface, reset_game_rect)
+        restart_game_button.draw(screen)
 
         # displaying you've won message
         if level_number == 0:
@@ -304,9 +285,7 @@ def main(screen):
             clear_space(space)
             screen.blit(lvl_cleared_surf, lvl_cleared_rect)
             # next level button
-            pygame.draw.rect(screen, 'red', next_lvl_rect_background)
-            pygame.draw.rect(screen, 'white', next_lvl_rect)
-            screen.blit(next_lvl_surf, next_lvl_rect)
+            next_lvl_button.draw(screen)
 
         pygame.display.update()
 
