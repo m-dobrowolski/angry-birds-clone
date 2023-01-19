@@ -16,7 +16,11 @@ big_font = pygame.font.Font(None, 200)
 enemies = []
 obstacles = []
 birds = []
+bird = None
 lifes = 0
+shooted = False
+stretched = False
+level_cleared = False
 
 space = pymunk.Space()
 space.gravity = (0, -600)
@@ -25,8 +29,10 @@ level = Level(space, enemies, obstacles)
 level_number = 1  # if level number == 0, you've won the game
 
 
-def load_level(level_num, space):
-    global lifes, bird, level_number
+def load_level(level_num):
+    global lifes, bird, level_number, level_cleared, shooted
+    shooted = False
+    level_cleared = False
     clear_space(space)
     try:
         level.load_level(level_num)
@@ -124,6 +130,27 @@ def clear_space(space):
     birds.clear()
 
 
+def shoot_bird(line):
+    global lifes, stretched, shooted
+    lifes -= 1
+    stretched = False
+    shooted = True
+    bird.body.body_type = pymunk.Body.DYNAMIC
+    angle = calculate_angle(*line)
+    force = calculate_distance(*line) * 50
+    fx = math.cos(angle) * force
+    fy = math.sin(angle) * force
+    bird.body.apply_impulse_at_local_point((-fx, -fy), (0, 0))
+
+
+def restart_level():
+    global level_cleared, level_number, shooted
+    level_cleared = False
+    shooted = False
+    clear_space(space)
+    load_level(level_number)
+
+
 def main(screen):
     run = True
 
@@ -134,14 +161,8 @@ def main(screen):
     create_ground(space)
     ground_rect = pygame.Rect(0, HEIGHT - 100, WIDTH, 100)
 
-    shooted = False
-    stretched = False
-    level_cleared = False
-
-    global lifes
-    global bird
-    global level_number
-    load_level(level_number, space)
+    global stretched, shooted, level_cleared, lifes, bird, level_number
+    load_level(level_number)
 
     space.add_collision_handler(1, 2).post_solve = collision_bird_enemy
     space.add_collision_handler(1, 3).post_solve = collision_bird_obstacle
@@ -210,7 +231,7 @@ def main(screen):
                     level_cleared = False
                     clear_space(space)
                     level_number += 1
-                    load_level(level_number, space)
+                    load_level(level_number)
             if lifes:
                 if not stretched and bird.bird_rect.collidepoint(mouse_pos):
                     if event.type == pygame.MOUSEBUTTONDOWN:
@@ -218,47 +239,29 @@ def main(screen):
             if stretched:
                 if event.type == pygame.MOUSEBUTTONUP:
                     # shooting a bird
-                    lifes -= 1
-                    stretched = False
-                    shooted = True
-                    bird.body.body_type = pymunk.Body.DYNAMIC
-                    angle = calculate_angle(*line)
-                    force = calculate_distance(*line) * 50
-                    fx = math.cos(angle) * force
-                    fy = math.sin(angle) * force
-                    bird.body.apply_impulse_at_local_point((-fx, -fy), (0, 0))
+                    shoot_bird(line)
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if reset_rect.collidepoint(mouse_pos):
                     # restarting level
-                    level_cleared = False
-                    shooted = False
-                    clear_space(space)
-                    load_level(level_number, space)
-
+                    load_level(level_number)
                 if reset_game_rect.collidepoint(mouse_pos):
                     # restarting game
-                    level_cleared = False
-                    shooted = False
-                    clear_space(space)
                     level_number = 1
-                    load_level(level_number, space)
+                    load_level(level_number)
                 if (level_cleared is True and
                         next_lvl_rect.collidepoint(mouse_pos) and
                         level_number != 0):
-                    # next level button
-                    shooted = False
-                    clear_space(space)
+                    # next level
                     level_number += 1
-                    load_level(level_number, space)
-                    level_cleared = False
+                    load_level(level_number)
 
         screen.fill('lightblue')
 
-        # drawing a bird
+        # drawing birds
         for bird in birds:
             bird.draw(screen)
 
-        # drawing an enemy
+        # drawing enemies
         for enemy in enemies:
             enemy.draw_enemy(screen)
 
