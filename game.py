@@ -254,6 +254,10 @@ class Game:
         lvl_cleared_surf = self.big_font.render(message, True, (64, 64, 64))
         lvl_cleared_rect = lvl_cleared_surf.get_rect(center=(width/2,
                                                      height/3))
+        # shooting rect
+        x_pos, y_pos = self.bird.position
+        shooting_rect = pygame.Rect(x_pos, y_pos, 30, 30)
+        shooting_rect.move_ip(-15, -15)
 
         while run:
             mouse_pos = pygame.mouse.get_pos()
@@ -267,7 +271,7 @@ class Game:
             # coords of a line if it exist, used to calculate force of shoot
             line = None
             if self.stretched is True:
-                line = self.limit_line(self.bird.bird_rect.center, mouse_pos,
+                line = self.limit_line(shooting_rect.center, mouse_pos,
                                        120)
 
             for event in pygame.event.get():
@@ -281,7 +285,7 @@ class Game:
                         self.load_level(self.level_number)
                 if self.lifes:
                     if (not self.stretched and
-                            self.bird.bird_rect.collidepoint(mouse_pos)):
+                            shooting_rect.collidepoint(mouse_pos)):
                         if event.type == pygame.MOUSEBUTTONDOWN:
                             self.stretched = True
                 if self.stretched:
