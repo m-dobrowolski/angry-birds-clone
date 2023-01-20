@@ -1,14 +1,13 @@
 import pygame
 import pymunk
 import math
-from classes import Bird
+from bird import Bird
 from levels import Level, NotExistantLevel
 from button import Button
 
 
 class Game:
     def __init__(self):
-        pygame.init()
         self.width = 1000
         self.height = 600
         self.screen = pygame.display.set_mode((self.width, self.height))

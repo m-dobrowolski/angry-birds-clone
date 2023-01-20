@@ -1,4 +1,5 @@
-from classes import Obstacle, Enemy
+from obstacle import Obstacle
+from enemy import Enemy
 
 
 class NotExistantLevel(Exception):
