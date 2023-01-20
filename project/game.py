@@ -1,13 +1,14 @@
 import pygame
 import pymunk
 import math
-from bird import Bird
-from levels import Level, NotExistantLevel
-from button import Button
+from project.bird import Bird
+from project.levels import Level, NotExistantLevel
+from project.button import Button
 
 
 class Game:
     def __init__(self):
+        '''initializes a game'''
         self.width = 1000
         self.height = 600
         self.screen = pygame.display.set_mode((self.width, self.height))
@@ -21,10 +22,8 @@ class Game:
         self.shooted = False
         self.stretched = False
         self.level_cleared = False
-
         self.space = pymunk.Space()
         self.space.gravity = (0, -600)
-
         self.level = Level(self.space, self.enemies, self.obstacles)
         self.level_number = 1  # if level number == 0, you've won the game
 
@@ -82,7 +81,7 @@ class Game:
     def collision_bird_obstacle(self, arbiter, space, data):
         '''handles collision between bird and obstacle'''
         bird_shape, obstacle_shape = arbiter.shapes
-        if arbiter.total_impulse.length > 2500:
+        if arbiter.total_impulse.length > 3000:
             for obstacle in self.obstacles:
                 if obstacle_shape.body == obstacle.body:
                     space.remove(obstacle.shape, obstacle.body)
@@ -91,7 +90,7 @@ class Game:
     def collision_enemy_obstacle(self, arbiter, space, data):
         '''handles collision between enemy and obstacle'''
         enemy_shape, obstacle_shape = arbiter.shapes
-        if arbiter.total_impulse.length > 4000:
+        if arbiter.total_impulse.length > 5000:
             for enemy in self.enemies:
                 if enemy_shape.body == enemy.body:
                     space.remove(enemy.shape, enemy.shape.body)
@@ -100,7 +99,7 @@ class Game:
     def collision_enemy_ground(self, arbiter, space, data):
         '''handles collision between enemy and ground'''
         enemy_shape, ground_shape = arbiter.shapes
-        if arbiter.total_impulse.length > 4000:
+        if arbiter.total_impulse.length > 5000:
             for enemy in self.enemies:
                 if enemy_shape.body == enemy.body:
                     space.remove(enemy.shape, enemy.shape.body)

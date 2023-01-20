@@ -1,5 +1,5 @@
-from obstacle import Obstacle
-from enemy import Enemy
+from project.obstacle import Obstacle
+from project.enemy import Enemy
 
 
 class NotExistantLevel(Exception):
@@ -33,7 +33,7 @@ class Level:
             self.enemies.append(enemy)
 
     def level1(self):
-        self.lifes = 2
+        self.lifes = 3
         obstacles = [
             Obstacle(self.space, (800, 150), 'column'),
             Obstacle(self.space, (880, 150), 'column'),

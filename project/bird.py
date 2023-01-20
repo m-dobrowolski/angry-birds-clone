@@ -1,6 +1,6 @@
 import pymunk
 import pygame
-from convert_coords import convert_coords
+from project.convert_coords import convert_coords
 
 
 class Bird:

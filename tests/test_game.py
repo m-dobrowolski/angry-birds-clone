@@ -1,4 +1,4 @@
-from game import Game
+from project.game import Game
 import pygame
 import pytest
 
@@ -38,7 +38,7 @@ def test_game_load_level():
 
 
 def test_clear_space():
-    game.clear_space
+    game.clear_space()
     assert len(game.enemies) == 0
     assert len(game.obstacles) == 0
     assert len(game.birds) == 0

@@ -1,4 +1,4 @@
-from levels import Level, NotExistantLevel
+from project.levels import Level, NotExistantLevel
 import pymunk
 import pytest
 
