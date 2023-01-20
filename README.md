@@ -16,4 +16,10 @@ Program składa się z następujących klas:
 - Level
 - Game
 
-Klasa Bird zawiera zawiera infromacje o każdym z ptaku znajdującym się aktualnie na ekranie. Zawiera informacje takie jak
+Klasa Bird zawiera zawiera infromacje o każdym z ptaku znajdującym się aktualnie na ekranie. Zawiera informacje takie jak shape i body - elementy niezbędne do generowania fizyki. Body zawiera fizyczne właśniwości objektu, takie jak rotacja, pozycja, prędkość lub masa, a shape definiuje kształt ciała. Tworzony jest obiekt początkowo statyczny (w miejscu wystrzelenia), po strzale ulega zmianie na typ dynamiczny. Pozwala wyrysować obiekt.
+
+Klasa Enemy jest podobnie zbudowana do klasy Bird. Rózni się ona tym, że rozpoczyna już jako obiekt dynamiczny. Zmienia się wartość collision_type, co pozwoli zdefiniować kolizję obiektu tej klasy z innymi. Pozwala wyrysować obiekt.
+
+Klasa Obstacle zawiera wszystkie informacje o przeszkodach zasłaniających przeciwników. Zdefiniowane są dwa typy przeszków: 'beam' i 'column'. Różnią się one startową pozycją, co ułatwia pozycjonowanie elementów w tworzeniu poziomów. Pozwala wyrysować obiekt.
+
+Klasa Game jest odpowiedzialna za przebieg całej gry.

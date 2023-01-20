@@ -1,3 +1,5 @@
+# i added this function in other file because it is used in multiple files
+
 WIDTH = 1000
 HEIGHT = 600
 

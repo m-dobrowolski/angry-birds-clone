@@ -29,6 +29,7 @@ class Game:
         self.level_number = 1  # if level number == 0, you've won the game
 
     def load_level(self, level_num):
+        '''clears space and loads level'''
         self.shooted = False
         self.level_cleared = False
         self.clear_space()
@@ -60,6 +61,7 @@ class Game:
         self.screen.blit(lifes_surface, lifes_rect)
 
     def create_ground(self):
+        '''create static ground'''
         body = pymunk.Body(body_type=pymunk.Body.STATIC)
         body.position = (self.width/2, 50)
         shape = pymunk.Poly.create_box(body, (self.width, 100))
@@ -105,7 +107,7 @@ class Game:
                     self.enemies.remove(enemy)
 
     def clear_space(self):
-        # clearing space
+        '''clears every object on the screen'''
         for enemy in self.enemies:
             self.space.remove(enemy.shape, enemy.body)
         self.enemies.clear()
@@ -117,6 +119,7 @@ class Game:
         self.birds.clear()
 
     def shoot_bird(self, line):
+        '''shoots bird with force calculated from line length'''
         self.lifes -= 1
         self.stretched = False
         self.shooted = True
@@ -130,6 +133,7 @@ class Game:
         self.bird.body.apply_impulse_at_local_point((-fx, -fy), (0, 0))
 
     def restart_level(self):
+        '''restarts level'''
         self.level_cleared = False
         self.shooted = False
         self.clear_space()
@@ -149,6 +153,7 @@ class Game:
         return line
 
     def add_collision(self):
+        '''adding collision handlers to simulation'''
         self.space.add_collision_handler(1, 2).post_solve = (
             self.collision_bird_enemy)
         self.space.add_collision_handler(1, 3).post_solve = (
@@ -161,6 +166,7 @@ class Game:
     def draw(self, screen, ground_rect, line, restart_level_button,
              restart_game_button, next_lvl_button, win_surf, win_rect,
              lvl_cleared_surf, lvl_cleared_rect):
+        '''drawing objects on the screen'''
 
         # filling background
         screen.fill('lightblue')
@@ -224,6 +230,7 @@ class Game:
         self.create_ground()
         ground_rect = pygame.Rect(0, height - 100, width, 100)
 
+        # loading first level
         self.load_level(self.level_number)
 
         # adding collision
@@ -255,7 +262,7 @@ class Game:
         lvl_cleared_rect = lvl_cleared_surf.get_rect(center=(width/2,
                                                      height/3))
         # shooting rect
-        x_pos, y_pos = self.bird.position
+        x_pos, y_pos = self.bird.start_position
         shooting_rect = pygame.Rect(x_pos, y_pos, 30, 30)
         shooting_rect.move_ip(-15, -15)
 
@@ -287,6 +294,7 @@ class Game:
                     if (not self.stretched and
                             shooting_rect.collidepoint(mouse_pos)):
                         if event.type == pygame.MOUSEBUTTONDOWN:
+                            # switching stretched to true when bird pressed
                             self.stretched = True
                 if self.stretched:
                     if event.type == pygame.MOUSEBUTTONUP:
