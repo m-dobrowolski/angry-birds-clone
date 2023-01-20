@@ -134,9 +134,6 @@ class Game:
 
     def restart_level(self):
         '''restarts level'''
-        self.level_cleared = False
-        self.shooted = False
-        self.clear_space()
         self.load_level(self.level_number)
 
     def limit_line(self, center_pos, mouse_pos, length):
