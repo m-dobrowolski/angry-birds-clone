@@ -1,6 +1,8 @@
 # Simple Angry Birds clone
 
-A minimal physics-based Angry Birds–style clone built with Pygame (for rendering) and Pymunk (for 2D physics).
+A minimal physics-based Angry Birds–style clone built with Pygame (for rendering) and Pymunk (for 2D physics).  
+
+This project was developed in my first semester of studies, for the course *Podstawy Informatyki i Programowania* (Introduction to Computer Science and Programming). The goal was to practice basic programming, physics simulations, and simple game development.
 
 ## Requirements
 - Python(3.11+ recommended)
